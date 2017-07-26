@@ -2417,8 +2417,8 @@ table th[class*="col-"] {
 .table-hover > tbody > tr:hover > .warning,
 .table-hover > tbody > tr.warning:hover > th {
   background-color: #faf2cc;
-}
-.table > thead > tr > td.danger,
+}.table > thead > tr > td.danger,
+
 .table > tbody > tr > td.danger,
 .table > tfoot > tr > td.danger,
 .table > thead > tr > th.danger,
