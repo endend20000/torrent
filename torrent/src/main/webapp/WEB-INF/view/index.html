@@ -11,28 +11,58 @@
     <meta http-equiv="Cache" content="no-cache">
     <link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/cerulean/bootstrap.min.css" rel="stylesheet" integrity="sha384-zF4BRsG/fLiTGfR9QL82DrilZxrwgY/+du4p/c7J72zZj+FLYq4zY00RylP9ZjiT" crossorigin="anonymous">
     <style type="text/css">
+        body{
+            height: 100%;background:center 100%;background-image: url('/torrent/assets/img/background.jpg') ;background-repeat :no-repeat;
+        }
+
+        div.wrap{
+            height: 100%;width:100%;overflow-y:scroll;
+        }
+        div.content{
+            text-align:center;display: none
+        }
+
+        table.main{
+            min-width:800px;max-width:1500px; margin-bottom: 0px;margin:0 auto
+        }
+
         .table > thead > tr > th{
             background-color:#99cdff;
         }
-         tbody > tr:nth-of-type(odd) {
+        .table >  tbody > tr:nth-of-type(odd) {
             background-color: #f9f9f9;
         }
-         tbody > tr:nth-of-type(odd):hover {
+        .table >  tbody > tr:nth-of-type(odd):hover {
              background-color: #E8E8E8;
          }
-         tbody > tr:nth-of-type(even) {
+        .table > tbody > tr:nth-of-type(even) {
              background-color: #d9edf7;
          }
-         tbody > tr:nth-of-type(even):hover {
+        .table > tbody > tr:nth-of-type(even):hover {
              background-color:#C4E3F3 ;
          }
+
+        .table > tbody > tr >td.time{
+            width:120px
+        }
+        .table > tbody > tr >td.download{
+            width:120px
+        }
+
+        footer > ul{
+            margin-top: 0px
+        }
+
+        div.loading{
+            position:absolute;left: 50%; top: 50%;transform: translate(-50%, -50%) ;display:none
+        }
     </style>
 </head>
-<body style="height: 100%;background:center 100%;background-image: url('/torrent/assets/img/background.jpg') ;background-repeat :no-repeat;">
-<div style="height: 100%;width:100%;overflow-y:scroll;">
-    <div class="header" style="white-space:nowrap;" id="navbar">
+<body>
+<div class="wrap">
+    <div class="header"  id="navbar">
         <nav class="navbar navbar-default">
-            <div class="container-fluid" style="height: 100% ;min-width: 1000px">
+            <div class="container-fluid">
                 <div class="navbar-header">
                     <span class="navbar-brand">大家在搜：</span>
                 </div>
@@ -58,8 +88,8 @@
             </div>
         </nav>
     </div>
-    <div class="container" style="text-align:center;display: none" id="div-content" :style="styleContent">
-        <table class="table table-hover" style="min-width:800px;max-width:1500px; margin-bottom: 0px;margin:0 auto">
+    <div class="container content" id="div-content" :style="styleContent">
+        <table class="table table-hover main">
             <!--class="table table-striped table-hover style="filter: Alpha(Opacity=50, Style=3 ); ""background-color:#79f2ff;filter: Alpha(opacity=50) -->
             <thead>
             <tr >
@@ -72,16 +102,16 @@
 
             <template  v-for="item in items">
                 <tr>
-                    <td>{{ item.text}}</td>
-                    <td>{{ item.createdTime}}</td>
-                    <td is="item" :item=item></td>
+                    <td>{{ item.name}}</td>
+                    <td class="time">{{ item.time}}</td>
+                    <td class="download" is="item" :item=item></td>
                 </tr>
             </template>
             </tbody>
         </table>
 
         <footer style=";margin:0 auto" id="footer-page" v-if="page.visible">
-            <ul class="pagination" style=" margin-top: 0px ">
+            <ul class="pagination">
                 <li :class="page.leftClass"><a  href="#" v-on:click.prevent="lastPage">&laquo;</a></li>
                 <li :class="page.rightClass"><a  href="#" v-on:click.prevent="nextPage">&raquo;</a></li>
                 <!--class="active"-->
@@ -91,7 +121,7 @@
     </div>
 
     <!--;transform: translate(-50%, -50%) v-if="loading" position: absolute;left: 50%; top: 50% -->
-    <div id="loading" style="position:absolute;left: 50%; top: 50%;transform: translate(-50%, -50%) ;display:none " :style="loadingStyle">
+    <div class="loading" id="loading" :style="loadingStyle">
         <img src="/torrent/assets/img/loading.gif" />
     </div>
 </div>
@@ -102,7 +132,7 @@
 <script src="https://unpkg.com/vuex"></script>
 <script>
 
-    var divLoading = new Vue({
+    var loadingVue = new Vue({
         el: '#loading',
         data:{
             loadingStyle:{display:'none'}
@@ -143,24 +173,24 @@
                 download:function(type){
                     console.log(this.item)
                     $.ajax({
-                        url: "/torrent/jsoup/torrent.json",    //请求的url地址
+                        url: "/torrent/torrent.json",    //请求的url地址
                         dataType: "json",   //返回格式为json
                         data: {url:this.item.href,type:type},    //参数值
                         type: "get",
-                        success: function(data) {
-                            if(data.status=='1'){
+                        success: function(result) {
+                            if(result.status==1){
                                 if(type==0){
-                                    window.location.href=data.dataset
+                                    window.location.href=result.data
                                 }else{
-                                    console.log('url:'+data.dataset)
-                                    window.open(data.dataset);
+                                    console.log('url:'+result.data)
+                                    window.open(result.data);
                                 }
                             }else{
-                                alert("异常"+req.msg);
+                                alert("异常"+result.msg);
                             }
                         },
-                        error:function(data) {
-                            console.log(data);
+                        error:function(result) {
+                            console.log(result);
                             alert("请求出错");
                             //$.messager.alert("警告", "请求出错","error");
                         }
@@ -188,21 +218,21 @@
     function searchContent() {
         divLoading.loadingStyle.display='block';
         $.ajax({
-            url: "/torrent/jsoup/data.json",    //请求的url地址
+            url: "/torrent/data.json",    //请求的url地址
             dataType: "json",   //返回格式为json
             data: {
                 keyword:searchVue.searchContent,
-                page:divContent.page.index,
-                rows:divContent.page.size
+                index:divContent.page.index,
+                size:divContent.page.size
             },
             type: "get",
-            success: function(data) {
+            success: function(result) {
                 divLoading.loadingStyle.display='none';
-                console.log(data);
-                if(data.rows.length!=0||divContent.page.index>1){
+                console.log(result);
+                if(result.data.length!=0||divContent.page.index>1){
                     divContent.page.visible=true;
 
-                    if(data.rows.length<divContent.page.size){
+                    if(result.data.length<divContent.page.size){
                         divContent.page.rightClass='disabled';
                     }else{
                         divContent.page.rightClass='';
@@ -216,12 +246,12 @@
                 }else{
                     divContent.page.visible=false;
                 }
-                divContent.items=data.rows;
+                divContent.items=result.data;
                 divContent.styleContent.display='block';
             },
-            error:function(data) {
-                console.log(data);
-                alert(data);
+            error:function(result) {
+                console.log(result);
+                alert(result);
             }
         });
     }
@@ -229,7 +259,7 @@
     var download = function(type){
         console.log(this.item)
         $.ajax({
-            url: "/torrent/jsoup/torrent.json",    //请求的url地址
+            url: "/torrent/torrent.json",    //请求的url地址
             dataType: "json",   //返回格式为json
             data: {url:this.item.href,type:type},    //参数值
             type: "get",

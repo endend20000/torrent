@@ -2,12 +2,12 @@ package org.cabbage.torrent.service.impl;
 
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import org.cabbage.torrent.dto.DataDTO;
+import org.cabbage.torrent.dto.SearchDTO;
 import org.cabbage.torrent.entity.BaseResult;
-import org.cabbage.torrent.service.JsoupService;
+import org.cabbage.torrent.service.SearchService;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -15,29 +15,25 @@ import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
 @Service
-public class JsoupServiceImpl  implements  JsoupService{
+public class SearchServiceImpl  implements  SearchService{
 	
-    String baseUrl="http://www.zhongzidi.com";	
+    private final String baseUrl="http://www.zhongzidi.com";	
 		
 	 @Override
-	public List<Map<String,Object>> data(String page,String rows,String keyword) throws Exception{
-		 	if(keyword==null){
-		 		return new ArrayList<Map<String,Object>>();
+	public List<DataDTO> data(SearchDTO searchDTO) throws Exception{
+		 	if(searchDTO.getKeyword()==null){
+		 		return new ArrayList<DataDTO>();
 		 	}
 
-		 	List<Map<String,Object>> data=new ArrayList<Map<String,Object>>();
+		 	List<DataDTO> data=new ArrayList<DataDTO>();
 		 	
-		 	int total=0;
-		 	int pagei=Integer.parseInt(page);
-		 	int rowsi=Integer.parseInt(rows);
+		 	int rate=searchDTO.getSize()/15;
 		 	
-		 	int rate=rowsi/15;
-		 	
-		 	int begin=rate * (pagei-1)+1;
-		 	int end=rate * pagei;
+		 	int begin=rate * (searchDTO.getIndex()-1)+1;
+		 	int end=rate * searchDTO.getIndex();
 		 	
 		 	for(int i=begin;i<=end;i++){
-		 		String url=baseUrl+"/list/"+keyword+"/"+i;
+		 		String url=baseUrl+"/list/"+searchDTO.getKeyword()+"/"+i;
 		 		Document doc =null;
 		 		try{
 		 			doc= Jsoup.connect(url).header("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2").timeout(1000*60).get();
@@ -48,25 +44,24 @@ public class JsoupServiceImpl  implements  JsoupService{
 			
 				Elements elements = doc.select("tbody");
 				
-				total=total+elements.size();
-				
 				for(Element element:elements){
-					Map<String,Object> map=new HashMap<String,Object>();
+					DataDTO dataDto=new DataDTO();
 					
 					Element a = element.select("a").first();
 					
-					map.put("text", a.text());
-					map.put("href",baseUrl+a.attr("href"));
+					dataDto.setName(a.text());
+					dataDto.setUrl(baseUrl+a.attr("href"));
 					
 					Elements strongs=element.select("strong");
-				    String createdTime = strongs.get(0).text();				
+				    String time = strongs.get(0).text();				
 					String size = strongs.get(1).text();				
 					String hot = strongs.get(2).text();
 					
-					map.put("createdTime", createdTime);
-					map.put("size", size);
-					map.put("hot", hot);
-					data.add(map);
+					dataDto.setTime(time);
+					dataDto.setSize(size);
+					dataDto.setHot(hot);
+
+					data.add(dataDto);
 				}
 		 	}
 			return data;
@@ -80,6 +75,6 @@ public class JsoupServiceImpl  implements  JsoupService{
 				 Elements elements = doc.select(".btn-success");
 				 Element a =elements.get(Integer.parseInt(type));
 				 String href=a.attr("href");
-				 return new BaseResult("1","成功",href);				 
+				 return new BaseResult(1,"成功",href);				 
 				}
 }
