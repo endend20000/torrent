@@ -40,7 +40,7 @@
             pageList:[15,30,45],
 /*             width:710,
             height:'98%', */
-    		url:"${path}/jsoup/data.json",
+    		url:"${path}/data.json",
     		columns:[[
     			//{field:'id', title: '编号', sortable: true, checkbox: true,fitColumns:true },
     			{field:'text',title:'标题',width:'50%','sortable':true,fitColumns:true },
