@@ -38,7 +38,7 @@ public class IndexController {
 	}
 	
 	@RequestMapping(value = "/torrent")
-	@ResponseBody//type 1 torrent 0 megent:
+	@ResponseBody
 	public Object torrent(String url,String type){
 		BaseResult br =null;
 		try {

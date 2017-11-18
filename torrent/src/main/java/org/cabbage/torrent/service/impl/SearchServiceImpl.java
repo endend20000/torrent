@@ -41,25 +41,25 @@ public class SearchServiceImpl  implements  SearchService{
 		 		}catch(Exception ex){
 		 			return data;
 		 		}
-			
 				Elements elements = doc.select("tbody");
 				
 				for(Element element:elements){
 					DataDTO dataDto=new DataDTO();
 					
 					Element a = element.select("a").first();
-					
 					dataDto.setName(a.text());
-					dataDto.setUrl(baseUrl+a.attr("href"));
 					
 					Elements strongs=element.select("strong");
 				    String time = strongs.get(0).text();				
 					String size = strongs.get(1).text();				
-					String hot = strongs.get(2).text();
+					String hot = strongs.get(2).text();					
 					
 					dataDto.setTime(time);
 					dataDto.setSize(size);
 					dataDto.setHot(hot);
+
+					String magnetUrl = element.select(".ls-magnet").select("a").first().attr("href");
+					dataDto.setUrl(magnetUrl);
 
 					data.add(dataDto);
 				}
