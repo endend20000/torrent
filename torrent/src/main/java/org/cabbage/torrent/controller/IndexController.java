@@ -22,7 +22,7 @@ public class IndexController {
 
 	@RequestMapping(value = "/")
     public ModelAndView baseType(HttpServletRequest request){
-		return new ModelAndView("jsoup/index");
+		return new ModelAndView("index");
     }
 
 	@RequestMapping(value = "/data")
