@@ -14,8 +14,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
-@Service
-public class SearchServiceImpl  implements  SearchService{
+@Service(value="zhongziso")
+public class ZhongzisoSearchServiceImpl  implements  SearchService{
 	
     private final String baseUrl="http://www.zhongzidi.com";	
 		
@@ -45,12 +45,13 @@ public class SearchServiceImpl  implements  SearchService{
 				
 				for(Element element:elements){
 					DataDTO dataDto=new DataDTO();
+					dataDto.setType(1);
 					
 					Element a = element.select("a").first();
 					dataDto.setName(a.text());
 					
 					Elements strongs=element.select("strong");
-				    String time = strongs.get(0).text();				
+				    String time = strongs.get(0).text();			
 					String size = strongs.get(1).text();				
 					String hot = strongs.get(2).text();					
 					

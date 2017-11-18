@@ -17,7 +17,8 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 public class IndexController {
 	
-	@Resource
+	//@Resource(name="zhongziso")
+	@Resource(name="sobt")
 	private SearchService searchService;	
 
 	@RequestMapping(value = "/")

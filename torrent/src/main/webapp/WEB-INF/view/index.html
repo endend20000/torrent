@@ -28,7 +28,7 @@
         }
 
         .table > thead > tr > th{
-            background-color:#99cdff;
+            background-color:#99cdff;text-align:center;
         }
         .table >  tbody > tr:nth-of-type(odd) {
             background-color: #f9f9f9;
@@ -173,7 +173,12 @@
             template: "<td><a href='#' v-on:click.prevent='download()'>磁力链</a></td>",
             methods: {
                 download:function(){
-                    window.location.href=this.item.url;
+                	if(this.item.type==1){
+                		window.location.href=this.item.url;
+                	}else{
+                		
+                		window.location.href=this.item.url;
+                	}   
                 }}
         }
     )

@@ -6,6 +6,15 @@ public class DataDTO {
 	private String size;
 	private String hot;
 	private String url;
+	private Integer type=1; //1 url为直接的链接 2 url为跳转页面需要再次提取url
+	
+	public Integer getType() {
+		return type;
+	}
+
+	public void setType(Integer type) {
+		this.type = type;
+	}
 
 	public String getName() {
 		return name;
