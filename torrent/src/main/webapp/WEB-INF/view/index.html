@@ -43,7 +43,7 @@
              background-color:#C4E3F3 ;
          }
 
-        .table > tbody > tr >td.time{
+        .table > tbody > tr >td.item{
             width:120px
         }
         .table > tbody > tr >td.download{
@@ -75,7 +75,7 @@
                         <li><a href="#" v-on:click.prevent="quickSearch($event)">高达</a></li>
                         <li><a href="#" v-on:click.prevent="quickSearch($event)">collection</a></li>
                     </ul>
-                    <form class="navbar-form navbar-left" role="search" id="form-search">
+                    <form class="navbar-form navbar-left" role="search" id="form-search" onsubmit="return false">
                         <div class="form-group">
                             <input type="text" class="form-control" placeholder="什么都能搜" v-model.trim="searchContent">
                         </div>
@@ -95,6 +95,8 @@
             <thead>
             <tr >
                 <th>资源描述</th>
+                <th style="width:120px">下载热度</th>
+                <th style="width:120px">文件大小</th>
                 <th style="width:120px">日期</th>
                 <th style="width:100px">下载</th>
             </tr>
@@ -104,7 +106,9 @@
             <template  v-for="item in items">
                 <tr>
                     <td>{{ item.name}}</td>
-                    <td class="time">{{ item.time}}</td>
+                    <td class="item">{{ item.hot}}</td>
+                    <td class="item">{{ item.size}}</td>
+                    <td class="item">{{ item.time}}</td>
                     <td class="download" is="item" :item=item></td> 
                     <!-- <td class="download"><a href="javascript:void(0);" onclick="javascript:window.location.href='{{ item.url}}'">磁力链{{ item.url}}</a></td> -->
                 </tr>
@@ -170,14 +174,28 @@
 
    Vue.component('item',{
             props:['item'],
-            template: "<td><a href='#' v-on:click.prevent='download()'>磁力链</a></td>",
+            template: "<td><a href='javascript:void(0);' v-on:click.prevent='download()'>磁力链</a></td>",
             methods: {
                 download:function(){
                 	if(this.item.type==1){
                 		window.location.href=this.item.url;
                 	}else{
-                		
-                		window.location.href=this.item.url;
+                        $.ajax({
+                            url: "/torrent.json",    //请求的url地址
+                            dataType: "json",   //返回格式为json
+                            data: {url:this.item.url},    //参数值
+                            type: "get",
+                            success: function(data) {
+                                if(data.status=='1'){
+                                   window.location.href=data.data
+                                }else{
+                                    alert("异常"+req.msg);
+                                }
+                            },
+                            error:function(data) {
+                                alert("请求出错");
+                            }
+                        });
                 	}   
                 }}
         }
