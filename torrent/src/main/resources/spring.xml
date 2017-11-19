@@ -29,10 +29,13 @@
     <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="locations">
             <list>
+             	<value>classpath:db.properties</value> 
             </list>
         </property>
     </bean>
-
+    
+    <import resource="classpath:spring-mybatis.xml"></import>
+    
     <aop:aspectj-autoproxy proxy-target-class="true"/>
-    <tx:annotation-driven transaction-manager="transactionManager"/>
+    <!-- <task:annotation-driven /> -->
 </beans>

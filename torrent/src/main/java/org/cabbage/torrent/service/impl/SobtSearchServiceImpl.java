@@ -6,32 +6,42 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import org.cabbage.torrent.dao.SearchLogMapper;
 import org.cabbage.torrent.dto.DataDTO;
 import org.cabbage.torrent.dto.SearchDTO;
 import org.cabbage.torrent.entity.BaseResult;
+import org.cabbage.torrent.entity.SearchLog;
 import org.cabbage.torrent.service.SearchService;
 import org.cabbage.torrent.task.SearchTask;
+import org.cabbage.torrent.utils.HttpUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service(value = "sobt")
 public class SobtSearchServiceImpl implements SearchService {
 
+	@Autowired
+	private SearchLogMapper searchLogMapper;
+	
 	private final String baseUrl = "http://www.sobt8.com/";
 
+	final  Logger logger  =  LoggerFactory.getLogger(SobtSearchServiceImpl. class );
+	
 	@Override
 	public List<DataDTO> data(SearchDTO searchDTO) throws Exception {
 		if (searchDTO.getKeyword() == null) {
 			return new ArrayList<DataDTO>();
-		}
-
+		}		
+		insertLog(searchDTO.getKeyword());
 		List<DataDTO> data = new ArrayList<DataDTO>();
 
 		int rate = searchDTO.getSize() / 10;
-
 		int begin = rate * (searchDTO.getIndex() - 1) + 1;
 		int end = rate * searchDTO.getIndex();
 
@@ -46,29 +56,9 @@ public class SobtSearchServiceImpl implements SearchService {
 			}
 			for (Future<Document> future : results) {
 				Document doc = future.get();
-
 				Elements elements = doc.select(".search-item");
-
 				for (Element element : elements) {
-					DataDTO dataDto = new DataDTO();
-					dataDto.setType(2);
-
-					String name = element.select(".item-title").select("a").first().text();
-					dataDto.setName(name);
-
-					String time = element.select(".item-bar").select("span").first().text().split("：")[1];
-					dataDto.setTime(time);
-
-					String size = element.select(".item-bar").select("span").get(1).text().split("：")[1];
-					dataDto.setSize(size);
-
-					String hot = element.select(".item-bar").select("span").get(2).text().split("：")[1];
-					dataDto.setHot(hot);
-
-					String magnetUrl = baseUrl + element.select(".item-title").select("a").first().attr("href");
-					dataDto.setUrl(magnetUrl);
-
-					data.add(dataDto);
+					data.add(element2data(element));
 				}
 			}
 
@@ -78,6 +68,39 @@ public class SobtSearchServiceImpl implements SearchService {
 			exec.shutdown();
 		}
 		return data;
+	}
+	
+	private void insertLog(String keywork) {
+		try{
+			SearchLog searchLog=new SearchLog();
+			searchLog.setKeyword(keywork);
+			searchLog.setIp(HttpUtils.getIpAddr());
+			searchLogMapper.insertSelective(searchLog);	
+		}catch(Exception ex) {
+			logger.error("插入搜索日志异常", ex);
+		}
+	
+	}
+	
+	private DataDTO element2data(Element element) {
+		DataDTO dataDto = new DataDTO();
+		dataDto.setType(2);
+
+		String name = element.select(".item-title").select("a").first().text();
+		dataDto.setName(name);
+
+		String time = element.select(".item-bar").select("span").first().text().split("：")[1];
+		dataDto.setTime(time);
+
+		String size = element.select(".item-bar").select("span").get(1).text().split("：")[1];
+		dataDto.setSize(size);
+
+		String hot = element.select(".item-bar").select("span").get(2).text().split("：")[1];
+		dataDto.setHot(hot);
+
+		String magnetUrl = baseUrl + element.select(".item-title").select("a").first().attr("href");
+		dataDto.setUrl(magnetUrl);
+		return dataDto;
 	}
 
 	@Override
