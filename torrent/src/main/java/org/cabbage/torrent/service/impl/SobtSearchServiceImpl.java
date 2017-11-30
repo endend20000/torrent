@@ -38,6 +38,7 @@ public class SobtSearchServiceImpl implements SearchService {
 		if (searchDTO.getKeyword() == null) {
 			return new ArrayList<DataDTO>();
 		}		
+		
 		insertLog(searchDTO.getKeyword());
 		List<DataDTO> data = new ArrayList<DataDTO>();
 
@@ -45,7 +46,7 @@ public class SobtSearchServiceImpl implements SearchService {
 		int begin = rate * (searchDTO.getIndex() - 1) + 1;
 		int end = rate * searchDTO.getIndex();
 
-		ExecutorService exec = Executors.newCachedThreadPool();
+/*		ExecutorService exec = Executors.newCachedThreadPool();
 		ArrayList<Future<Document>> results = new ArrayList<Future<Document>>();
 		try {
 
@@ -66,7 +67,7 @@ public class SobtSearchServiceImpl implements SearchService {
 			return data;
 		} finally {
 			exec.shutdown();
-		}
+		}*/
 		return data;
 	}
 	

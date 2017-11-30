@@ -25,6 +25,11 @@ public class IndexController {
     public ModelAndView baseType(HttpServletRequest request){
 		return new ModelAndView("index");
     }
+	
+	@RequestMapping(value = "/mobile")
+    public ModelAndView mobile(HttpServletRequest request){
+		return new ModelAndView("mobileIndex");
+    }
 
 	@RequestMapping(value = "/data")
 	@ResponseBody

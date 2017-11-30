@@ -134,9 +134,23 @@
 
 <script src="https://code.jquery.com/jquery.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-<script src="https://unpkg.com/vue"></script>
-<script src="https://unpkg.com/vuex"></script>
+<script src="https://cdn.bootcss.com/vue/2.5.8/vue.js"></script>
+<!-- <script src="https://unpkg.com/vuex"></script>> -->
+<!-- <script src="https://unpkg.com/vue"></script> -->
+
 <script>
+
+	function IsPC(){    
+	    var userAgentInfo = navigator.userAgent;  
+	    var Agents = new Array("Android", "iPhone", "SymbianOS", "Windows Phone", "iPad", "iPod");    
+	    var flag = true;    
+	    for (var v = 0; v < Agents.length; v++) {    
+	        if (userAgentInfo.indexOf(Agents[v]) > 0) { flag = false; break; }    
+	    }    
+	    return flag;    
+	 }  
+	
+	if(!IsPC()) window.location.href='/mobile'; 
 
     var divLoading = new Vue({
         el: '#loading',

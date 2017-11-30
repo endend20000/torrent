@@ -36,7 +36,6 @@
     </selectKey>
     insert into search_log
     <trim prefix="(" suffix=")" suffixOverrides=",">
-      id,
       <if test="keyword != null">
         keyword,
       </if>
@@ -51,7 +50,6 @@
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
-      #{id,jdbcType=INTEGER},
       <if test="keyword != null">
         #{keyword,jdbcType=VARCHAR},
       </if>
